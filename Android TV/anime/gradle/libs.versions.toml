@@ -1,17 +1,17 @@
 [versions]
-agp = "8.13.0"
+agp = "8.13.1"
 coilCompose = "2.7.0"
 kotlin = "2.2.21"
 coreKtx = "1.17.0"
 appcompat = "1.7.1"
-composeBom = "2025.10.01"
+composeBom = "2025.11.01"
 kotlinxSerializationJson = "1.9.0"
 material3 = "1.4.0"
 tvFoundation = "1.0.0-alpha12"
 tvMaterial = "1.0.1"
-lifecycleRuntimeKtx = "2.9.4"
-lifecycleViewmodelCompose = "2.9.4"
-activityCompose = "1.11.0"
+lifecycleRuntimeKtx = "2.10.0"
+lifecycleViewmodelCompose = "2.10.0"
+activityCompose = "1.12.0"
 
 [libraries]
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }

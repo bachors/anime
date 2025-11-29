@@ -64,7 +64,7 @@ fun AnimeSearchScreen(viewModel: SearchViewModel = viewModel()) {
     val streamUrl by viewModel.streamUrl.collectAsState()
     val showPlayer by viewModel.showPlayer.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
-    
+
     if (showPlayer && streamUrl != null) {
         VideoPlayerScreen(
             streamUrl = streamUrl!!,
@@ -72,7 +72,7 @@ fun AnimeSearchScreen(viewModel: SearchViewModel = viewModel()) {
         )
         return
     }
-    
+
     if (isLoading && showDetail) {
         Box(
             modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.8f)),
@@ -86,7 +86,7 @@ fun AnimeSearchScreen(viewModel: SearchViewModel = viewModel()) {
         }
         return
     }
-    
+
     if (showDetail && animeDetail != null) {
         AnimeDetailScreen(
             anime = animeDetail!!,
@@ -102,41 +102,61 @@ fun AnimeSearchScreen(viewModel: SearchViewModel = viewModel()) {
             .background(Color.Black)
             .padding(16.dp)
     ) {
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { 
-                searchQuery = it
-                if (it.isEmpty()) {
-                    viewModel.searchAnime("")
-                }
-            },
-            label = { Text("Cari Anime...", color = Color.White) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .onKeyEvent { keyEvent ->
-                    if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyDown) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = {
+                    searchQuery = it
+                    if (it.isEmpty()) {
+                        viewModel.searchAnime("")
+                    }
+                },
+                label = { Text("Cari Anime...", color = Color.White) },
+                modifier = Modifier
+                    .weight(1f)
+                    .onKeyEvent { keyEvent ->
+                        if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyDown) {
+                            viewModel.searchAnime(searchQuery)
+                            keyboardController?.hide()
+                            true
+                        } else false
+                    },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
                         viewModel.searchAnime(searchQuery)
                         keyboardController?.hide()
-                        true
-                    } else false
-                },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    viewModel.searchAnime(searchQuery)
-                    keyboardController?.hide()
-                }
-            ),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedBorderColor = Color.Blue,
-                unfocusedBorderColor = Color.Gray
+                    }
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color.Blue,
+                    unfocusedBorderColor = Color.Gray
+                )
             )
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+            Icon(
+                painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_github),
+                contentDescription = "GitHub",
+                tint = Color.White,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable {
+                        uriHandler.openUri("https://github.com/bachors/anime")
+                    }
+                    .padding(8.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -214,9 +234,9 @@ fun SearchAnimeItem(anime: AnimeItem, onClick: () -> Unit) {
                     .height(120.dp),
                 contentScale = ContentScale.Crop
             )
-            
+
             Spacer(modifier = Modifier.width(12.dp))
-            
+
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -228,23 +248,23 @@ fun SearchAnimeItem(anime: AnimeItem, onClick: () -> Unit) {
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
                 Text(
                     text = "Status: ${anime.status}",
                     color = Color.Gray,
                     fontSize = 12.sp
                 )
-                
+
                 Text(
                     text = "Rating: ${anime.rating}",
                     color = Color.Gray,
                     fontSize = 12.sp
                 )
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
                 Text(
                     text = anime.genres.joinToString(", ") { it.name },
                     color = Color.LightGray,
@@ -277,9 +297,9 @@ fun OngoingAnimeItem(anime: OngoingAnime, onClick: () -> Unit) {
                     .height(200.dp),
                 contentScale = ContentScale.Crop
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = anime.title,
                 color = Color.White,
@@ -288,7 +308,7 @@ fun OngoingAnimeItem(anime: OngoingAnime, onClick: () -> Unit) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            
+
             Text(
                 text = anime.current_episode,
                 color = Color.Green,
@@ -318,9 +338,9 @@ fun CompleteAnimeItem(anime: CompleteAnime, onClick: () -> Unit) {
                     .height(200.dp),
                 contentScale = ContentScale.Crop
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = anime.title,
                 color = Color.White,
@@ -329,13 +349,13 @@ fun CompleteAnimeItem(anime: CompleteAnime, onClick: () -> Unit) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            
+
             Text(
                 text = "${anime.episode_count} Eps",
                 color = Color.Blue,
                 fontSize = 10.sp
             )
-            
+
             Text(
                 text = "★ ${anime.rating}",
                 color = Color.Yellow,
@@ -359,9 +379,9 @@ fun AnimeDetailScreen(anime: AnimeDetail, onBack: () -> Unit, onEpisodeClick: (S
         ) {
             Text("Kembali", color = Color.White)
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         LazyColumn {
             item {
                 Row {
@@ -373,9 +393,9 @@ fun AnimeDetailScreen(anime: AnimeDetail, onBack: () -> Unit, onEpisodeClick: (S
                             .height(300.dp),
                         contentScale = ContentScale.Crop
                     )
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Column {
                         Text(
                             text = anime.title,
@@ -383,33 +403,33 @@ fun AnimeDetailScreen(anime: AnimeDetail, onBack: () -> Unit, onEpisodeClick: (S
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        
+
                         Text(
                             text = anime.japanese_title,
                             color = Color.Gray,
                             fontSize = 14.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "⭐ ${anime.rating}",
                             color = Color.Yellow,
                             fontSize = 14.sp
                         )
-                        
+
                         Text(
                             text = "${anime.episode_count} Episode • ${anime.duration}",
                             color = Color.Gray,
                             fontSize = 12.sp
                         )
-                        
+
                         Text(
                             text = "Studio: ${anime.studio}",
                             color = Color.Gray,
                             fontSize = 12.sp
                         )
-                        
+
                         Text(
                             text = anime.genres.joinToString(", ") { it.name },
                             color = Color.LightGray,
@@ -417,24 +437,24 @@ fun AnimeDetailScreen(anime: AnimeDetail, onBack: () -> Unit, onEpisodeClick: (S
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = "Sinopsis",
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Text(
                     text = anime.synopsis,
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = "Episode List",
                     color = Color.White,
@@ -442,7 +462,7 @@ fun AnimeDetailScreen(anime: AnimeDetail, onBack: () -> Unit, onEpisodeClick: (S
                     fontWeight = FontWeight.Bold
                 )
             }
-            
+
             items(anime.episode_lists) { episode ->
                 Card(
                     modifier = Modifier

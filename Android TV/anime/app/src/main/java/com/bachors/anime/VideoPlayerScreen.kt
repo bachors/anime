@@ -35,7 +35,7 @@ fun VideoPlayerScreen(streamUrl: String, onBack: () -> Unit) {
             },
             modifier = Modifier.fillMaxSize()
         )
-        
+
         Button(
             onClick = onBack,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.8f)),
